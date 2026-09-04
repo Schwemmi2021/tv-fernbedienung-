@@ -45,6 +45,17 @@ html, body {
 .status.connected { color: #32d74b; }
 .status.error { color: var(--danger); }
 
+.cert-hint {
+  text-align: center;
+  padding: 0 20px 12px;
+}
+.cert-hint .text-btn {
+  font-size: 13px;
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 8px 14px;
+}
+
 .profile-switch {
   display: flex;
   gap: 10px;
@@ -144,6 +155,7 @@ html, body {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  grid-gap: 12px;
   gap: 12px;
 }
 
@@ -155,6 +167,9 @@ html, body {
   color: var(--text);
   font-size: 24px;
   font-weight: 500;
+}
+@supports not (aspect-ratio: 1) {
+  .num-btn { height: 64px; }
 }
 .num-btn:active { background: var(--surface-hi); transform: scale(0.95); }
 

@@ -7,6 +7,10 @@ const tvModeSelect = document.getElementById('tvModeSelect');
 
 let socket = null;
 let socketReady = false;
+let autoOverride = null;
+
+const certHintEl = document.getElementById('certHint');
+const openCertBtnEl = document.getElementById('openCertBtn');
 
 function getTvIp() {
   return localStorage.getItem('tvIp') || '';
@@ -20,10 +24,12 @@ function getMode() {
   return localStorage.getItem('tvMode') || 'auto';
 }
 
-function useSecure() {
+function useSecure(forceOverride) {
+  if (forceOverride !== undefined) return forceOverride;
   const mode = getMode();
   if (mode === 'secure') return true;
   if (mode === 'plain') return false;
+  if (autoOverride !== null) return autoOverride;
   return location.protocol === 'https:';
 }
 
@@ -32,8 +38,17 @@ function setStatus(text, cls) {
   statusEl.className = 'status' + (cls ? ' ' + cls : '');
 }
 
-function buildSocketUrl(ip) {
-  if (useSecure()) {
+function showCertHint(ip) {
+  openCertBtnEl.onclick = () => window.open(`https://${ip}:8002`, '_blank');
+  certHintEl.hidden = false;
+}
+
+function hideCertHint() {
+  certHintEl.hidden = true;
+}
+
+function buildSocketUrl(ip, secure) {
+  if (secure) {
     const token = getToken();
     const tokenPart = token ? `&token=${encodeURIComponent(token)}` : '';
     return `wss://${ip}:8002/api/v2/channels/samsung.remote.control?name=${APP_NAME}${tokenPart}`;
@@ -41,40 +56,18 @@ function buildSocketUrl(ip) {
   return `ws://${ip}:8001/api/v2/channels/samsung.remote.control?name=${APP_NAME}`;
 }
 
-function ensureConnection() {
+function attemptConnection(ip, secure) {
   return new Promise((resolve, reject) => {
-    const ip = getTvIp();
-    if (!ip) {
-      setStatus('keine IP hinterlegt', 'error');
-      settingsDialog.showModal();
-      reject(new Error('no-ip'));
-      return;
-    }
-
-    if (socket && socketReady) {
-      resolve(socket);
-      return;
-    }
-
-    if (socket) {
-      try { socket.close(); } catch (e) {}
-    }
-
     setStatus('verbinde…');
-    const url = buildSocketUrl(ip);
+    const url = buildSocketUrl(ip, secure);
     const ws = new WebSocket(url);
     socket = ws;
     socketReady = false;
 
     const timeout = setTimeout(() => {
       ws.close();
-      setStatus('Zeitüberschreitung', 'error');
       reject(new Error('timeout'));
-    }, 8000);
-
-    ws.addEventListener('open', () => {
-      // Warte auf ms.channel.connect Bestätigung statt sofort als bereit zu gelten
-    });
+    }, 5000);
 
     ws.addEventListener('message', (event) => {
       let msg;
@@ -87,13 +80,13 @@ function ensureConnection() {
         }
         socketReady = true;
         setStatus('verbunden', 'connected');
+        hideCertHint();
         resolve(ws);
       }
 
       if (msg.event === 'ms.channel.timeOut' || msg.event === 'ms.error') {
         clearTimeout(timeout);
         socketReady = false;
-        setStatus('vom TV abgelehnt', 'error');
         reject(new Error('rejected'));
       }
     });
@@ -101,7 +94,6 @@ function ensureConnection() {
     ws.addEventListener('error', () => {
       clearTimeout(timeout);
       socketReady = false;
-      setStatus('Verbindungsfehler', 'error');
       reject(new Error('socket-error'));
     });
 
@@ -113,6 +105,49 @@ function ensureConnection() {
       }
     });
   });
+}
+
+async function ensureConnection() {
+  const ip = getTvIp();
+  if (!ip) {
+    setStatus('keine IP hinterlegt', 'error');
+    settingsDialog.showModal();
+    throw new Error('no-ip');
+  }
+
+  if (socket && socketReady) {
+    return socket;
+  }
+
+  if (socket) {
+    try { socket.close(); } catch (e) {}
+  }
+
+  const firstSecure = useSecure();
+  try {
+    const ws = await attemptConnection(ip, firstSecure);
+    return ws;
+  } catch (e) {
+    if (firstSecure) showCertHint(ip);
+
+    if (getMode() !== 'auto') {
+      setStatus(firstSecure ? 'Verbindungsfehler (verschlüsselt)' : 'Verbindungsfehler (unverschlüsselt)', 'error');
+      throw e;
+    }
+
+    // Im Automatik-Modus die jeweils andere Verbindungsart versuchen
+    const secondSecure = !firstSecure;
+    try {
+      const ws = await attemptConnection(ip, secondSecure);
+      autoOverride = secondSecure;
+      hideCertHint();
+      return ws;
+    } catch (e2) {
+      if (secondSecure) showCertHint(ip);
+      setStatus('Zeitüberschreitung', 'error');
+      throw e2;
+    }
+  }
 }
 
 async function sendKey(key) {
@@ -217,6 +252,8 @@ document.getElementById('settingsForm').addEventListener('submit', () => {
     localStorage.removeItem('tvToken');
     if (socket) { try { socket.close(); } catch (e) {} }
     socketReady = false;
+    autoOverride = null;
+    hideCertHint();
     setStatus('nicht verbunden');
   }
 });
@@ -302,6 +339,8 @@ document.getElementById('forgetBtn').addEventListener('click', () => {
   localStorage.removeItem('tvToken');
   if (socket) { try { socket.close(); } catch (e) {} }
   socketReady = false;
+  autoOverride = null;
+  hideCertHint();
   setStatus('Kopplung vergessen');
   settingsDialog.close();
 });
