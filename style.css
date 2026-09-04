@@ -1,0 +1,457 @@
+:root {
+  color-scheme: dark;
+  --bg: #1c1c1e;
+  --surface: #2c2c2e;
+  --surface-hi: #3a3a3c;
+  --accent: #0a84ff;
+  --danger: #ff453a;
+  --text: #f2f2f7;
+  --text-dim: #98989f;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  user-select: none;
+  overscroll-behavior: none;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: max(12px, env(safe-area-inset-top)) 16px 12px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 22px;
+  padding: 8px;
+  border-radius: 50%;
+}
+.icon-btn:active { background: var(--surface-hi); }
+
+.status {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+.status.connected { color: #32d74b; }
+.status.error { color: var(--danger); }
+
+body[data-profile="mama"] { --accent: #ff375f; }
+body[data-profile="papa"] { --accent: #0a84ff; }
+
+.profile-switch {
+  display: flex;
+  gap: 10px;
+  padding: 0 20px 16px;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.profile-btn {
+  flex: 1;
+  height: 48px;
+  border-radius: 24px;
+  border: 2px solid var(--surface-hi);
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.profile-btn[data-profile="mama"].active {
+  background: #ff375f;
+  border-color: #ff375f;
+  color: white;
+}
+
+.profile-btn[data-profile="papa"].active {
+  background: #0a84ff;
+  border-color: #0a84ff;
+  color: white;
+}
+
+.remote {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 8px 20px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+.power-btn {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  border: none;
+  background: var(--surface);
+  color: var(--danger);
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+}
+.power-btn:active { background: var(--surface-hi); transform: scale(0.96); }
+
+.row.two-col {
+  display: flex;
+  width: 100%;
+  gap: 16px;
+}
+
+.col {
+  flex: 1;
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.label {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 2px;
+}
+
+.big-btn {
+  width: 100%;
+  height: 56px;
+  border: none;
+  border-radius: 14px;
+  background: var(--surface-hi);
+  color: var(--text);
+  font-size: 26px;
+  font-weight: 500;
+}
+.big-btn:active { background: var(--accent); transform: scale(0.97); }
+
+.small-btn {
+  width: 100%;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  border: 1px solid var(--surface-hi);
+  color: var(--text-dim);
+  font-size: 14px;
+}
+.small-btn:active { background: var(--surface-hi); }
+
+.keypad {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.num-btn {
+  aspect-ratio: 1;
+  border: none;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 24px;
+  font-weight: 500;
+}
+.num-btn:active { background: var(--surface-hi); transform: scale(0.95); }
+
+dialog {
+  border: none;
+  border-radius: 20px;
+  background: var(--surface);
+  color: var(--text);
+  padding: 24px;
+  width: min(340px, 90vw);
+}
+dialog::backdrop { background: rgba(0,0,0,0.5); }
+
+dialog h2 { margin: 0 0 16px; font-size: 18px; }
+
+dialog label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+dialog input, dialog select {
+  background: var(--surface-hi);
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  color: var(--text);
+  font-size: 16px;
+}
+
+.mode-label {
+  margin-top: 16px;
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin: 10px 0 0;
+}
+
+.dialog-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.primary-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.text-btn {
+  background: none;
+  border: none;
+  color: var(--danger);
+  font-size: 14px;
+  padding: 10px 0;
+}
+
+.danger-btn {
+  background: var(--danger);
+}
+
+#powerConfirmDialog h2 {
+  text-align: center;
+}
+
+#powerConfirmDialog .dialog-buttons {
+  flex-direction: column-reverse;
+  gap: 10px;
+}
+
+#powerConfirmDialog button {
+  width: 100%;
+  height: 50px;
+  font-size: 16px;
+}
+
+.favorites-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.favorites-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fav-btn {
+  width: 100%;
+  min-height: 52px;
+  border: none;
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+}
+.fav-btn:active { background: var(--surface-hi); transform: scale(0.98); }
+.fav-btn .fav-channel { color: var(--text-dim); font-size: 14px; }
+
+.favorites-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+.fav-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-hi);
+  border-radius: 12px;
+  padding: 8px 10px;
+}
+
+.fav-edit-row .fav-edit-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.fav-edit-row .fav-edit-name {
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fav-edit-row .fav-edit-channel {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.fav-edit-row button {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 18px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.fav-edit-row button:active { background: var(--surface); }
+.fav-edit-row button.remove-fav { color: var(--danger); }
+
+.add-fav-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+.add-fav-form input {
+  flex: 1;
+  min-width: 0;
+}
+.add-fav-form input#favChannelInput {
+  flex: 0 0 90px;
+}
+.add-fav-form button {
+  flex-shrink: 0;
+  width: 44px;
+}
+
+.scan-block {
+  margin-top: 16px;
+}
+
+.scan-row {
+  display: flex;
+  gap: 8px;
+}
+
+.scan-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.scan-btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+  border: 1px solid var(--surface-hi);
+  border-radius: 10px;
+  padding: 0 14px;
+  color: var(--text);
+}
+.scan-btn:disabled {
+  opacity: 0.5;
+}
+
+.scan-results {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+  max-height: 30vh;
+  overflow-y: auto;
+}
+
+.scan-result-btn {
+  width: 100%;
+  text-align: left;
+  background: var(--surface-hi);
+  border: none;
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: var(--text);
+}
+
+.scan-result-btn .scan-result-ip {
+  display: block;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.headphone-section {
+  width: 100%;
+}
+
+.headphone-btn {
+  width: 100%;
+  min-height: 56px;
+  border: none;
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 500;
+}
+.headphone-btn:active { background: var(--surface-hi); transform: scale(0.98); }
+
+.dpad {
+  display: grid;
+  grid-template-columns: 70px 70px 70px;
+  grid-template-rows: 70px 70px 70px;
+  gap: 8px;
+  justify-content: center;
+  margin: 20px auto;
+}
+
+.dpad-btn {
+  border: none;
+  border-radius: 16px;
+  background: var(--surface-hi);
+  color: var(--text);
+  font-size: 22px;
+}
+.dpad-btn:active { background: var(--accent); transform: scale(0.95); }
+
+.dpad-up { grid-column: 2; grid-row: 1; }
+.dpad-left { grid-column: 1; grid-row: 2; }
+.dpad-ok { grid-column: 2; grid-row: 2; font-weight: 700; font-size: 16px; background: var(--accent); color: white; }
+.dpad-right { grid-column: 3; grid-row: 2; }
+.dpad-down { grid-column: 2; grid-row: 3; }
+
+.dpad-extra {
+  display: flex;
+  gap: 10px;
+}
+
+.dpad-extra-btn {
+  flex: 1;
+  height: 48px;
+  border: none;
+  border-radius: 12px;
+  background: var(--surface-hi);
+  color: var(--text);
+  font-size: 14px;
+}
+.dpad-extra-btn:active { background: var(--accent); }

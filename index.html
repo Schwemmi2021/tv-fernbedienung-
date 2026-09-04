@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>TV Fernbedienung</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1c1c1e">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <button id="settingsBtn" class="icon-btn" aria-label="Einstellungen">⚙</button>
+  <div id="status" class="status">nicht verbunden</div>
+  <button id="favEditBtn" class="icon-btn" aria-label="Senderliste bearbeiten">☰</button>
+</header>
+
+<div class="profile-switch">
+  <button class="profile-btn" data-profile="mama">Mama</button>
+  <button class="profile-btn" data-profile="papa">Papa</button>
+</div>
+
+<main class="remote">
+
+  <button id="powerBtn" class="power-btn" aria-label="Ausschalten">⏻</button>
+
+  <div class="row two-col">
+    <div class="col">
+      <div class="label">Ton</div>
+      <button class="big-btn" data-key="KEY_VOLUP">+</button>
+      <button class="big-btn" data-key="KEY_VOLDOWN">–</button>
+      <button class="small-btn" data-key="KEY_MUTE">Stumm</button>
+    </div>
+    <div class="col">
+      <div class="label">Sender</div>
+      <button class="big-btn" data-channel-key="KEY_CHUP">+</button>
+      <button class="big-btn" data-channel-key="KEY_CHDOWN">–</button>
+    </div>
+  </div>
+
+  <div class="keypad">
+    <button class="num-btn" data-channel-key="KEY_1">1</button>
+    <button class="num-btn" data-channel-key="KEY_2">2</button>
+    <button class="num-btn" data-channel-key="KEY_3">3</button>
+    <button class="num-btn" data-channel-key="KEY_4">4</button>
+    <button class="num-btn" data-channel-key="KEY_5">5</button>
+    <button class="num-btn" data-channel-key="KEY_6">6</button>
+    <button class="num-btn" data-channel-key="KEY_7">7</button>
+    <button class="num-btn" data-channel-key="KEY_8">8</button>
+    <button class="num-btn" data-channel-key="KEY_9">9</button>
+    <span></span>
+    <button class="num-btn" data-channel-key="KEY_0">0</button>
+    <span></span>
+  </div>
+
+  <div class="favorites-section">
+    <div class="label">Favoriten</div>
+    <div id="favoritesList" class="favorites-list"></div>
+  </div>
+
+  <div id="headphoneSection" class="headphone-section">
+    <button id="headphoneBtn" class="headphone-btn">🎧 Kopfhörer koppeln / Menü</button>
+  </div>
+
+  <div id="hdmiSection" class="headphone-section">
+    <button id="hdmiBtn" class="headphone-btn">📡 Sky-Box (HDMI wechseln)</button>
+    <p class="hint">Mehrmals tippen, bis das Sky-Bild erscheint.</p>
+  </div>
+
+</main>
+
+<dialog id="dpadDialog">
+  <h2>TV-Menü steuern</h2>
+  <p class="hint">Damit navigierst du wie mit der Original-Fernbedienung im Bildschirmmenü, z.B. zu Ton → Bluetooth-Kopfhörer koppeln, oder zur Lautstärke-Regelung der Kopfhörer.</p>
+  <div class="dpad">
+    <button class="dpad-btn dpad-up" data-key="KEY_UP" aria-label="Hoch">▲</button>
+    <button class="dpad-btn dpad-left" data-key="KEY_LEFT" aria-label="Links">◀</button>
+    <button class="dpad-btn dpad-ok" data-key="KEY_ENTER" aria-label="Auswählen">OK</button>
+    <button class="dpad-btn dpad-right" data-key="KEY_RIGHT" aria-label="Rechts">▶</button>
+    <button class="dpad-btn dpad-down" data-key="KEY_DOWN" aria-label="Runter">▼</button>
+  </div>
+  <div class="dpad-extra">
+    <button class="dpad-extra-btn" data-key="KEY_RETURN">Zurück</button>
+    <button class="dpad-extra-btn" data-key="KEY_HOME">TV-Menü / Home</button>
+  </div>
+  <div class="dialog-buttons">
+    <button type="button" id="closeDpadBtn" class="primary-btn">Fertig</button>
+  </div>
+</dialog>
+
+<dialog id="settingsDialog">
+  <form method="dialog" id="settingsForm">
+    <h2>Einstellungen</h2>
+    <label>
+      IP-Adresse des Fernsehers
+      <input type="text" id="tvIpInput" placeholder="z.B. 192.168.1.42" inputmode="decimal" autocomplete="off">
+    </label>
+    <p class="hint">Zu finden am TV unter: Einstellungen → Allgemein → Netzwerk → Netzwerkstatus</p>
+
+    <div class="scan-block">
+      <div class="scan-row">
+        <input type="text" id="scanBaseInput" placeholder="192.168.1" inputmode="decimal" autocomplete="off">
+        <button type="button" id="scanBtn" class="text-btn scan-btn">🔍 Suchen</button>
+      </div>
+      <div id="scanStatus" class="hint"></div>
+      <div id="scanResults" class="scan-results"></div>
+    </div>
+
+    <label class="mode-label">
+      Verbindungsart
+      <select id="tvModeSelect">
+        <option value="auto">Automatisch</option>
+        <option value="plain">Unverschlüsselt (Port 8001)</option>
+        <option value="secure">Verschlüsselt (Port 8002)</option>
+      </select>
+    </label>
+    <p class="hint">Bei "Automatisch" wird verschlüsselt genutzt, wenn diese Seite selbst über https läuft, sonst unverschlüsselt. Klappt eine Art nicht, hier auf die andere umschalten.</p>
+    <div class="dialog-buttons">
+      <button type="button" id="forgetBtn" class="text-btn">Kopplung vergessen</button>
+      <button type="submit" id="saveBtn" class="primary-btn">Speichern</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="powerConfirmDialog">
+  <h2>Fernseher ausschalten?</h2>
+  <div class="dialog-buttons">
+    <button type="button" id="powerCancelBtn" class="text-btn">Abbrechen</button>
+    <button type="button" id="powerConfirmBtn" class="primary-btn danger-btn">Ja, ausschalten</button>
+  </div>
+</dialog>
+
+<dialog id="favoritesDialog">
+  <h2 id="favoritesDialogTitle">Senderliste bearbeiten</h2>
+  <div id="favoritesEditor" class="favorites-editor"></div>
+  <form id="addFavForm" class="add-fav-form">
+    <input type="text" id="favNameInput" placeholder="Name, z.B. ARD" autocomplete="off">
+    <input type="text" id="favChannelInput" placeholder="Kanalnr." inputmode="numeric" autocomplete="off">
+    <button type="submit" class="primary-btn">+</button>
+  </form>
+  <div class="dialog-buttons">
+    <button type="button" id="closeFavBtn" class="primary-btn">Fertig</button>
+  </div>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>
