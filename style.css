@@ -45,9 +45,6 @@ html, body {
 .status.connected { color: #32d74b; }
 .status.error { color: var(--danger); }
 
-body[data-profile="mama"] { --accent: #ff375f; }
-body[data-profile="papa"] { --accent: #0a84ff; }
-
 .profile-switch {
   display: flex;
   gap: 10px;
@@ -67,15 +64,7 @@ body[data-profile="papa"] { --accent: #0a84ff; }
   font-weight: 600;
 }
 
-.profile-btn[data-profile="mama"].active {
-  background: #ff375f;
-  border-color: #ff375f;
-  color: white;
-}
-
-.profile-btn[data-profile="papa"].active {
-  background: #0a84ff;
-  border-color: #0a84ff;
+.profile-btn.active {
   color: white;
 }
 
@@ -455,3 +444,85 @@ dialog input, dialog select {
   font-size: 14px;
 }
 .dpad-extra-btn:active { background: var(--accent); }
+
+.profiles-open-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--surface-hi);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-top: 16px;
+  color: var(--text);
+}
+
+.profile-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.profile-edit-row {
+  background: var(--surface-hi);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.profile-edit-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-color-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  flex-shrink: 0;
+}
+
+.profile-name-input {
+  flex: 1;
+  min-width: 0;
+  background: var(--surface);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: var(--text);
+  font-size: 15px;
+}
+
+.profile-remove-btn {
+  background: none;
+  border: none;
+  color: var(--danger);
+  font-size: 18px;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.profile-edit-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+  padding-left: 38px;
+}
+
+.profile-edit-options label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.profile-edit-options input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}

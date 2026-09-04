@@ -19,10 +19,7 @@
   <button id="favEditBtn" class="icon-btn" aria-label="Senderliste bearbeiten">☰</button>
 </header>
 
-<div class="profile-switch">
-  <button class="profile-btn" data-profile="mama">Mama</button>
-  <button class="profile-btn" data-profile="papa">Papa</button>
-</div>
+<div id="profileSwitch" class="profile-switch"></div>
 
 <main class="remote">
 
@@ -97,13 +94,13 @@
     <h2>Einstellungen</h2>
     <label>
       IP-Adresse des Fernsehers
-      <input type="text" id="tvIpInput" placeholder="z.B. 192.168.1.42" inputmode="decimal" autocomplete="off">
+      <input type="text" id="tvIpInput" placeholder="z.B. 192.168.1.42" inputmode="text" autocomplete="off">
     </label>
     <p class="hint">Zu finden am TV unter: Einstellungen → Allgemein → Netzwerk → Netzwerkstatus</p>
 
     <div class="scan-block">
       <div class="scan-row">
-        <input type="text" id="scanBaseInput" placeholder="192.168.1" inputmode="decimal" autocomplete="off">
+        <input type="text" id="scanBaseInput" placeholder="192.168.1" inputmode="text" autocomplete="off">
         <button type="button" id="scanBtn" class="text-btn scan-btn">🔍 Suchen</button>
       </div>
       <div id="scanStatus" class="hint"></div>
@@ -119,11 +116,23 @@
       </select>
     </label>
     <p class="hint">Bei "Automatisch" wird verschlüsselt genutzt, wenn diese Seite selbst über https läuft, sonst unverschlüsselt. Klappt eine Art nicht, hier auf die andere umschalten.</p>
+
+    <button type="button" id="openProfilesBtn" class="text-btn scan-btn profiles-open-btn">👤 Profile verwalten</button>
+
     <div class="dialog-buttons">
       <button type="button" id="forgetBtn" class="text-btn">Kopplung vergessen</button>
       <button type="submit" id="saveBtn" class="primary-btn">Speichern</button>
     </div>
   </form>
+</dialog>
+
+<dialog id="profilesDialog">
+  <h2>Profile verwalten</h2>
+  <div id="profileEditor" class="profile-editor"></div>
+  <button type="button" id="addProfileBtn" class="text-btn scan-btn">+ Profil hinzufügen</button>
+  <div class="dialog-buttons">
+    <button type="button" id="closeProfilesBtn" class="primary-btn">Fertig</button>
+  </div>
 </dialog>
 
 <dialog id="powerConfirmDialog">

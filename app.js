@@ -136,15 +136,16 @@ function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function ensureLiveTvForMama() {
-  if (getActiveProfile() === 'mama') {
+async function ensureLiveTvIfNeeded() {
+  const profile = getActiveProfileObj();
+  if (profile && profile.forceTv) {
     await sendKey('KEY_TV');
     await delay(400);
   }
 }
 
 async function sendChannel(channel) {
-  await ensureLiveTvForMama();
+  await ensureLiveTvIfNeeded();
   const digits = String(channel).replace(/[^0-9]/g, '').split('');
   for (const digit of digits) {
     await sendKey(`KEY_${digit}`);
@@ -153,7 +154,7 @@ async function sendChannel(channel) {
 }
 
 async function sendChannelKey(key) {
-  await ensureLiveTvForMama();
+  await ensureLiveTvIfNeeded();
   await sendKey(key);
 }
 
@@ -305,31 +306,169 @@ document.getElementById('forgetBtn').addEventListener('click', () => {
   settingsDialog.close();
 });
 
-function getActiveProfile() {
-  return localStorage.getItem('tvProfile') || 'mama';
+const PROFILE_COLORS = ['#ff375f', '#0a84ff', '#30d158', '#ff9f0a'];
+const MAX_PROFILES = 4;
+const DEFAULT_PROFILES = [
+  { id: 'mama', name: 'Mama', color: PROFILE_COLORS[0], headphones: true, hdmi: false, forceTv: true },
+  { id: 'papa', name: 'Papa', color: PROFILE_COLORS[1], headphones: false, hdmi: true, forceTv: false },
+];
+
+function getProfiles() {
+  try {
+    const stored = JSON.parse(localStorage.getItem('tvProfiles'));
+    if (Array.isArray(stored) && stored.length) return stored;
+  } catch (e) {}
+  return DEFAULT_PROFILES;
 }
 
-function setActiveProfile(profile) {
-  localStorage.setItem('tvProfile', profile);
+function saveProfiles(profiles) {
+  localStorage.setItem('tvProfiles', JSON.stringify(profiles));
+}
+
+function getActiveProfile() {
+  const profiles = getProfiles();
+  const stored = localStorage.getItem('tvProfile');
+  if (stored && profiles.some((p) => p.id === stored)) return stored;
+  return profiles[0].id;
+}
+
+function getActiveProfileObj() {
+  return getProfiles().find((p) => p.id === getActiveProfile());
+}
+
+function setActiveProfile(id) {
+  localStorage.setItem('tvProfile', id);
   applyProfile();
 }
 
-function applyProfile() {
-  const profile = getActiveProfile();
-  document.body.dataset.profile = profile;
-  document.querySelectorAll('.profile-btn').forEach((btn) => {
-    btn.classList.toggle('active', btn.dataset.profile === profile);
+const profileSwitchEl = document.getElementById('profileSwitch');
+
+function renderProfileSwitch() {
+  const profiles = getProfiles();
+  const active = getActiveProfile();
+  profileSwitchEl.innerHTML = '';
+  profiles.forEach((p) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'profile-btn' + (p.id === active ? ' active' : '');
+    btn.textContent = p.name;
+    if (p.id === active) {
+      btn.style.background = p.color;
+      btn.style.borderColor = p.color;
+    }
+    btn.addEventListener('click', () => {
+      setActiveProfile(p.id);
+      ensureLiveTvIfNeeded();
+    });
+    profileSwitchEl.appendChild(btn);
   });
-  document.getElementById('headphoneSection').hidden = profile !== 'mama';
-  document.getElementById('hdmiSection').hidden = profile !== 'papa';
+}
+
+function applyProfile() {
+  const profile = getActiveProfileObj();
+  document.body.style.setProperty('--accent', profile.color);
+  renderProfileSwitch();
+  document.getElementById('headphoneSection').hidden = !profile.headphones;
+  document.getElementById('hdmiSection').hidden = !profile.hdmi;
   renderFavorites();
 }
 
-document.querySelectorAll('.profile-btn').forEach((btn) => {
-  btn.addEventListener('click', () => {
-    setActiveProfile(btn.dataset.profile);
-    ensureLiveTvForMama();
+const profilesDialog = document.getElementById('profilesDialog');
+const profileEditorEl = document.getElementById('profileEditor');
+const addProfileBtn = document.getElementById('addProfileBtn');
+
+function renderProfileEditor() {
+  const profiles = getProfiles();
+  profileEditorEl.innerHTML = '';
+  profiles.forEach((p, i) => {
+    const row = document.createElement('div');
+    row.className = 'profile-edit-row';
+    row.innerHTML = `
+      <div class="profile-edit-top">
+        <button type="button" class="profile-color-dot" style="background:${p.color}" aria-label="Farbe ändern"></button>
+        <input type="text" class="profile-name-input" value="${p.name}" maxlength="16">
+        <button type="button" class="profile-remove-btn" aria-label="Profil entfernen">✕</button>
+      </div>
+      <div class="profile-edit-options">
+        <label><input type="checkbox" class="opt-headphones" ${p.headphones ? 'checked' : ''}> 🎧 Kopfhörer-Menü anzeigen</label>
+        <label><input type="checkbox" class="opt-hdmi" ${p.hdmi ? 'checked' : ''}> 📡 HDMI-Taste (Sky-Box) anzeigen</label>
+        <label><input type="checkbox" class="opt-forcetv" ${p.forceTv ? 'checked' : ''}> Vor Senderwahl auf TV-Tuner wechseln</label>
+      </div>
+    `;
+
+    row.querySelector('.profile-color-dot').addEventListener('click', () => {
+      const idx = PROFILE_COLORS.indexOf(p.color);
+      p.color = PROFILE_COLORS[(idx + 1) % PROFILE_COLORS.length];
+      saveProfiles(profiles);
+      renderProfileEditor();
+      applyProfile();
+    });
+
+    row.querySelector('.profile-name-input').addEventListener('change', (e) => {
+      p.name = e.target.value.trim() || p.name;
+      saveProfiles(profiles);
+      renderProfileSwitch();
+    });
+
+    row.querySelector('.opt-headphones').addEventListener('change', (e) => {
+      p.headphones = e.target.checked;
+      saveProfiles(profiles);
+      applyProfile();
+    });
+
+    row.querySelector('.opt-hdmi').addEventListener('change', (e) => {
+      p.hdmi = e.target.checked;
+      saveProfiles(profiles);
+      applyProfile();
+    });
+
+    row.querySelector('.opt-forcetv').addEventListener('change', (e) => {
+      p.forceTv = e.target.checked;
+      saveProfiles(profiles);
+    });
+
+    row.querySelector('.profile-remove-btn').addEventListener('click', () => {
+      if (profiles.length <= 1) return;
+      profiles.splice(i, 1);
+      saveProfiles(profiles);
+      if (getActiveProfile() === p.id) {
+        localStorage.setItem('tvProfile', profiles[0].id);
+      }
+      renderProfileEditor();
+      applyProfile();
+    });
+
+    profileEditorEl.appendChild(row);
   });
+
+  addProfileBtn.hidden = profiles.length >= MAX_PROFILES;
+}
+
+document.getElementById('openProfilesBtn').addEventListener('click', () => {
+  settingsDialog.close();
+  renderProfileEditor();
+  profilesDialog.showModal();
+});
+
+document.getElementById('closeProfilesBtn').addEventListener('click', () => {
+  profilesDialog.close();
+});
+
+addProfileBtn.addEventListener('click', () => {
+  const profiles = getProfiles();
+  if (profiles.length >= MAX_PROFILES) return;
+  const usedColors = profiles.map((p) => p.color);
+  const nextColor = PROFILE_COLORS.find((c) => !usedColors.includes(c)) || PROFILE_COLORS[0];
+  profiles.push({
+    id: `p${Date.now()}`,
+    name: `Person ${profiles.length + 1}`,
+    color: nextColor,
+    headphones: false,
+    hdmi: false,
+    forceTv: false,
+  });
+  saveProfiles(profiles);
+  renderProfileEditor();
 });
 
 function getFavorites() {
@@ -402,10 +541,9 @@ function renderFavoritesEditor() {
 }
 
 const favoritesDialogTitle = document.getElementById('favoritesDialogTitle');
-const profileLabels = { mama: 'Mama', papa: 'Papa' };
 
 document.getElementById('favEditBtn').addEventListener('click', () => {
-  favoritesDialogTitle.textContent = `Senderliste von ${profileLabels[getActiveProfile()]} bearbeiten`;
+  favoritesDialogTitle.textContent = `Senderliste von ${getActiveProfileObj().name} bearbeiten`;
   renderFavoritesEditor();
   favoritesDialog.showModal();
 });
