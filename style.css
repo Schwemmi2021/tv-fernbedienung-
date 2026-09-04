@@ -35,8 +35,16 @@ html, body {
   font-size: 22px;
   padding: 8px;
   border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 .icon-btn:active { background: var(--surface-hi); }
+
+.btn-icon {
+  vertical-align: -3px;
+  margin-right: 4px;
+}
 
 .status {
   font-size: 13px;
@@ -57,15 +65,18 @@ html, body {
 }
 
 .profile-switch {
-  display: flex;
-  gap: 10px;
-  padding: 0 20px 16px;
+  display: table;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 10px 0;
+  width: 100%;
   max-width: 420px;
   margin: 0 auto;
+  padding: 0 20px 16px;
 }
 
 .profile-btn {
-  flex: 1;
+  display: table-cell;
   height: 48px;
   border-radius: 24px;
   border: 2px solid var(--surface-hi);
@@ -73,6 +84,7 @@ html, body {
   color: var(--text-dim);
   font-size: 16px;
   font-weight: 600;
+  text-align: center;
 }
 
 .profile-btn.active {
@@ -169,7 +181,11 @@ html, body {
   font-weight: 500;
 }
 @supports not (aspect-ratio: 1) {
-  .num-btn { height: 64px; }
+  .num-btn {
+    width: 64px;
+    height: 64px;
+    justify-self: center;
+  }
 }
 .num-btn:active { background: var(--surface-hi); transform: scale(0.95); }
 
