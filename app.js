@@ -197,6 +197,13 @@ document.querySelectorAll('[data-key]').forEach((btn) => {
   btn.addEventListener('click', () => sendKey(btn.dataset.key));
 });
 
+const muteBtn = document.getElementById('muteBtn');
+let isMuted = false;
+muteBtn.addEventListener('click', () => {
+  isMuted = !isMuted;
+  muteBtn.classList.toggle('active', isMuted);
+});
+
 document.querySelectorAll('[data-channel-key]').forEach((btn) => {
   btn.addEventListener('click', () => sendChannelKey(btn.dataset.channelKey));
 });

@@ -10,6 +10,7 @@
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+button:focus { outline: none; }
 
 html, body {
   margin: 0;
@@ -98,7 +99,9 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 28px;
+}
+.remote > *:not(:first-child) {
+  margin-top: 40px;
 }
 
 .power-btn {
@@ -119,7 +122,9 @@ html, body {
 .row.two-col {
   display: flex;
   width: 100%;
-  gap: 16px;
+}
+.row.two-col > *:not(:first-child) {
+  margin-left: 20px;
 }
 
 .col {
@@ -130,7 +135,9 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+}
+.col > *:not(:first-child) {
+  margin-top: 20px;
 }
 
 .label {
@@ -162,13 +169,19 @@ html, body {
   font-size: 14px;
 }
 .small-btn:active { background: var(--surface-hi); }
+.small-btn.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
 
 .keypad {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-gap: 12px;
-  gap: 12px;
+  grid-gap: 16px;
+  gap: 16px;
+  margin-top: 20px;
 }
 
 .num-btn {
@@ -204,9 +217,12 @@ dialog h2 { margin: 0 0 16px; font-size: 18px; }
 dialog label {
   display: flex;
   flex-direction: column;
-  gap: 8px;
   font-size: 14px;
   color: var(--text-dim);
+}
+dialog label > input,
+dialog label > select {
+  margin-top: 8px;
 }
 
 dialog input, dialog select {
@@ -263,7 +279,9 @@ dialog input, dialog select {
 
 #powerConfirmDialog .dialog-buttons {
   flex-direction: column-reverse;
-  gap: 10px;
+}
+#powerConfirmDialog .dialog-buttons > *:not(:first-child) {
+  margin-bottom: 10px;
 }
 
 #powerConfirmDialog button {
@@ -277,14 +295,18 @@ dialog input, dialog select {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+}
+.favorites-section > *:not(:first-child) {
+  margin-top: 10px;
 }
 
 .favorites-list {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+}
+.favorites-list > *:not(:first-child) {
+  margin-top: 10px;
 }
 
 .fav-btn {
@@ -307,18 +329,22 @@ dialog input, dialog select {
 .favorites-editor {
   display: flex;
   flex-direction: column;
-  gap: 8px;
   max-height: 40vh;
   overflow-y: auto;
+}
+.favorites-editor > *:not(:first-child) {
+  margin-top: 8px;
 }
 
 .fav-edit-row {
   display: flex;
   align-items: center;
-  gap: 8px;
   background: var(--surface-hi);
   border-radius: 12px;
   padding: 8px 10px;
+}
+.fav-edit-row > *:not(:first-child) {
+  margin-left: 8px;
 }
 
 .fav-edit-row .fav-edit-info {
@@ -353,8 +379,10 @@ dialog input, dialog select {
 
 .add-fav-form {
   display: flex;
-  gap: 8px;
   margin-top: 16px;
+}
+.add-fav-form > *:not(:first-child) {
+  margin-left: 8px;
 }
 .add-fav-form input {
   flex: 1;
@@ -374,7 +402,9 @@ dialog input, dialog select {
 
 .scan-row {
   display: flex;
-  gap: 8px;
+}
+.scan-row > *:not(:first-child) {
+  margin-left: 8px;
 }
 
 .scan-row input {
@@ -397,10 +427,12 @@ dialog input, dialog select {
 .scan-results {
   display: flex;
   flex-direction: column;
-  gap: 8px;
   margin-top: 10px;
   max-height: 30vh;
   overflow-y: auto;
+}
+.scan-results > *:not(:first-child) {
+  margin-top: 8px;
 }
 
 .scan-result-btn {
@@ -440,6 +472,7 @@ dialog input, dialog select {
   display: grid;
   grid-template-columns: 70px 70px 70px;
   grid-template-rows: 70px 70px 70px;
+  grid-gap: 8px;
   gap: 8px;
   justify-content: center;
   margin: 20px auto;
@@ -462,7 +495,9 @@ dialog input, dialog select {
 
 .dpad-extra {
   display: flex;
-  gap: 10px;
+}
+.dpad-extra > *:not(:first-child) {
+  margin-left: 10px;
 }
 
 .dpad-extra-btn {
@@ -490,9 +525,11 @@ dialog input, dialog select {
 .profile-editor {
   display: flex;
   flex-direction: column;
-  gap: 12px;
   max-height: 50vh;
   overflow-y: auto;
+}
+.profile-editor > *:not(:first-child) {
+  margin-top: 12px;
 }
 
 .profile-edit-row {
@@ -504,7 +541,9 @@ dialog input, dialog select {
 .profile-edit-top {
   display: flex;
   align-items: center;
-  gap: 10px;
+}
+.profile-edit-top > *:not(:first-child) {
+  margin-left: 10px;
 }
 
 .profile-color-dot {
@@ -539,16 +578,17 @@ dialog input, dialog select {
 .profile-edit-options {
   display: flex;
   flex-direction: column;
-  gap: 6px;
   margin-top: 10px;
   padding-left: 38px;
+}
+.profile-edit-options > *:not(:first-child) {
+  margin-top: 6px;
 }
 
 .profile-edit-options label {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 8px;
   font-size: 13px;
   color: var(--text-dim);
 }
@@ -556,4 +596,5 @@ dialog input, dialog select {
 .profile-edit-options input[type="checkbox"] {
   width: 18px;
   height: 18px;
+  margin-right: 8px;
 }
